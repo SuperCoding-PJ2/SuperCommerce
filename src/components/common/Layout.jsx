@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
-const Layout = ({children}) => {
-  return (
-    <main className='p-6'>
-      {children}
-    </main>
-  )
-}
+const Layout = ({ children }) => {
+  return <main className="p-6">{children}</main>;
+};
 
-export default Layout
+export default Layout;
