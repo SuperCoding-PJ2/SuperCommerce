@@ -8,6 +8,11 @@ import 'swiper/css/navigation'; // ⭐ Navigation CSS
 
 const List = () => {
   const [items, setItems] = useState([]);
+  const [selected, setSelected] = useState('');
+
+  const handleChange = (e) => {
+    setSelected(e.target.value);
+  };
 
   useEffect(() => {
     fetch('/data/items.json')
@@ -23,6 +28,23 @@ const List = () => {
 
   return (
     <Layout>
+      <div className='flex items-center mb-4 px-4'>
+        <div className='mr-4'><span className='text-gray-500'>view</span> <span className='text-gray-500'>1</span><span className='text-gray-500'> | </span><span className='font-bold font-black'>4</span></div>
+        <div className='w-[193px]'>
+          <label htmlFor="select" className="block text-sm font-medium text-gray-700 mb-1"></label>
+          <select
+            id="select"
+            value={selected}
+            onChange={handleChange}
+            className="block w-full px-3 py-2 border-t border-b border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+          >
+            <option value="">Sort by</option>
+            <option value="option1">option 1</option>
+            <option value="option2">option 2</option>
+            <option value="option3">option 3</option>
+          </select>
+        </div>
+      </div>
       <div className='flex flex-wrap w-full'>
         {/* 아이템 목록 렌더링 */}
         {chunkedItems.map((chunk, index) => {
