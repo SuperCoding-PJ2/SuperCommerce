@@ -2,3 +2,22 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --swiper-navigation-size: 20px !important;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: gray;
+  top: 40%;
+  /* transform: translateY(-50%); */
+}
+
+.swiper-button-next {
+  right: 15px;
+}
+
+.swiper-button-prev {
+  left: 15px;
+}

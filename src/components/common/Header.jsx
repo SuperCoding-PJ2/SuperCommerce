@@ -32,8 +32,8 @@ const Header = () => {
           </Link>
         </div>
       </header>
-      <div className='border-b p-4 text-gray-400 text-sm'>
-        <span className=''>home</span> <span> > </span> <span>login</span>
+      <div className='border-b p-4 text-gray-400 text-sm flex gap-2'>
+        <span className=''>home</span> <img src={`${process.env.PUBLIC_URL}/img/arrow.svg`} alt="화살표" /> <span>login</span>
       </div>
     </div>
   )
