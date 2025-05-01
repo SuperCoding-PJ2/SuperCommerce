@@ -1,26 +1,34 @@
 import React from 'react'
-
 import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import Menu from './Menu';
+import HamburgerButton from './HamburgerButton';
 
 const Header = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
   return (
     <div>
       <header className='flex justify-between items-center bg-gray-200 px-6 h-20'>
-        <div>
-          <img src={`${process.env.PUBLIC_URL}/img/menu.svg`} alt="메뉴" />
-        </div>
+        <HamburgerButton onClick={() => setIsSidebarOpen(prev => !prev)} />
+        <Menu 
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)} 
+        />
         <h1>
           <Link to='/'>
             <img src={`${process.env.PUBLIC_URL}/img/logo.svg`} alt='로고' />
           </Link>
         </h1>			
-        {/* <Menu /> */}
-        <div className='text-sm flex justify-end items-center'>
-          <p className='mr-4'><span className='text-gray-500'>Ko</span> | <span className='font-bold'>KRW</span></p>
+        <div className='text-sm flex justify-end items-center gap-4'>
+          <p><span className='text-gray-500'>Ko</span> | <span className='font-bold'>KRW</span></p>
           <Link to='/login'>
             <p>
               <img src={`${process.env.PUBLIC_URL}/img/user.svg`} alt="로그인" />
             </p>
+          </Link>
+          <Link to='/shoppingcart'>
+            <img src={`${process.env.PUBLIC_URL}/img/fast-cart.svg`} alt="장바구니" />
           </Link>
         </div>
       </header>

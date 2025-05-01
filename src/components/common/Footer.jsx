@@ -1,10 +1,10 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 
-const Footer = () => {
-  return (
+const Footer = () => {  
 
-    <div className='w-full absolute bottom-0 border-t'>
+  return (
+    <div className='w-full border-t relative'>
       <div className='flex justify-center items-center gap-x-4 mb-4 pt-[50px]'>
         <div className='py-2 px-4 bg-gray-300 text-gray-500'>Terms and Conditions</div>
         <div className='py-2 px-4 bg-gray-300 text-gray-500'>Help</div>
