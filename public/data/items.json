@@ -2,97 +2,97 @@
   {
     "id": 1,
     "text": "Vape lomo occupy viral austin ",
-    "image": "img/item_01.png",
+    "image": "../img/item_01.png",
     "price": "\u20A9 70,000"
   },
   {
     "id": 2,
     "text": "Activated charcoal art party meh affogato, synth af cloud bread kogi",
-    "image": "img/item_02.png",
+    "image": "../img/item_02.png",
     "price": "\u20A9 77,000"
   },
   {
     "id": 3,
     "text": "Authentic gastropub af, artisan next level live-edge",
-    "image": "img/item_03.png",
+    "image": "../img/item_03.png",
     "price": "\u20A9 57,000"
   },
   {
     "id": 4,
     "text": "Chicharrones beard kitsch sriracha. Sriracha copper mug",
-    "image": "img/item_04.png",
+    "image": "../img/item_04.png",
     "price": "\u20A9 73,000"
   },
   {
     "id": 5,
     "text": "Authentic gastropub af, artisan next level live-edge ",
-    "image": "img/item_05.png",
+    "image": "../img/item_05.png",
     "price": "\u20A9 75,000"
   },
   {
     "id": 6,
     "text": "Activated charcoal art party meh affogato, synth af cloud bread kogi",
-    "image": "img/item_06.png",
+    "image": "../img/item_06.png",
     "price": "\u20A9 55,000"
   },
   {
     "id": 7,
     "text": "Authentic gastropub af, artisan next level live-edge ",
-    "image": "img/item_07.png",
+    "image": "../img/item_07.png",
     "price": "\u20A9 57,000"
   },
   {
     "id": 8,
     "text": "Chicharrones beard kitsch sriracha. Sriracha copper mug ",
-    "image": "img/item_08.png",
+    "image": "../img/item_08.png",
     "price": "\u20A9 55,000"
   },
   {
     "id": 9,
     "text": "Vape lomo occupy viral austin",
-    "image": "img/item_09.png",
+    "image": "../img/item_09.png",
     "price": "\u20A9 97,000"
   },
   {
     "id": 10,
     "text": "Activated charcoal art party meh affogato, synth af cloud bread kogi",
-    "image": "img/item_10.png",
+    "image": "../img/item_10.png",
     "price": "\u20A9 87,000"
   },
   {
     "id": 11,
     "text": "Authentic gastropub af, artisan next level live-edge ",
-    "image": "img/item_big_01.png",
+    "image": "../img/item_big_01.png",
     "price": "\u20A9 71,000"
   },
   {
     "id": 12,
     "text": "Authentic gastropub af, artisan next level live-edge ",
-    "image": "img/item_big_02.png",
+    "image": "../img/item_big_02.png",
     "price": "\u20A9 71,000"
   },
   {
     "id": 13,
     "text": "Vape lomo occupy viral austin",
-    "image": "img/item_11.png",
+    "image": "../img/item_11.png",
     "price": "\u20A9 83,000"
   },
   {
     "id": 14,
     "text": "Activated charcoal art party meh affogato, synth af cloud bread kogi",
-    "image": "img/item_12.png",
+    "image": "../img/item_12.png",
     "price": "\u20A9 71,000"
   },
   {
     "id": 15,
     "text": "Authentic gastropub af, artisan next level live-edge ",
-    "image": "img/item_13.png",
+    "image": "../img/item_13.png",
     "price": "\u20A9 77,000"
   },
   {
     "id": 16,
     "text": "Chicharrones beard kitsch sriracha. Sriracha copper mug",
-    "image": "img/item_14.png",
+    "image": "../img/item_14.png",
     "price": "\u20A9 73,000"
   }
 ]

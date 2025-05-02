@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules'; // ⭐ Navigation 모듈
 import 'swiper/css';
 import 'swiper/css/navigation'; // ⭐ Navigation CSS
+import { Link } from 'react-router-dom';
 
 const List = () => {
   const [items, setItems] = useState([]);
@@ -55,13 +56,15 @@ const List = () => {
                   {/* 왼쪽 2개 아이템 */}
                   {chunk.slice(0, 2).map((item) => (
                     <div key={item.id} className="w-1/4">
-                      <img src={item.image} alt="item" className="mx-auto" />
-                      <p className="font-[Montserrat] text-[16px] text-gray-900 font-medium leading-[1.3] py-2 px-4">
-                        {item.text}
-                      </p>
-                      <p className="font-[Open Sans] text-[16px] text-gray-900 font-medium px-4 pb-8">
-                        {item.price}
-                      </p>
+                      <Link to={`/detail/${item.id}`}>
+                        <img src={item.image} alt="item" className="mx-auto" />
+                        <p className="font-[Montserrat] text-[16px] text-gray-900 font-medium leading-[1.3] py-2 px-4">
+                          {item.text}
+                        </p>
+                        <p className="font-[Open Sans] text-[16px] text-gray-900 font-medium px-4 pb-8">
+                          {item.price}
+                        </p>
+                      </Link>
                     </div>
                   ))}
   
@@ -99,11 +102,13 @@ const List = () => {
           // 기본 아이템 출력
           return chunk.map((item) => (
             <div key={item.id} className="w-1/4">
-              <img src={item.image} alt="item" className="mx-auto" />
-              <p className="font-[Montserrat] text-[16px] text-gray-900 font-medium leading-[1.3] py-2 px-4">
-                {item.text}
-              </p>
-              <p className="font-[Open Sans] text-[16px] text-gray-900 font-medium px-4 pb-8">{item.price}</p>
+              <Link to={`/detail/${item.id}`}>
+                <img src={item.image} alt="item" className="mx-auto" />
+                <p className="font-[Montserrat] text-[16px] text-gray-900 font-medium leading-[1.3] py-2 px-4">
+                  {item.text}
+                </p>
+                <p className="font-[Open Sans] text-[16px] text-gray-900 font-medium px-4 pb-8">{item.price}</p>
+              </Link>
             </div>
           ));
         })}

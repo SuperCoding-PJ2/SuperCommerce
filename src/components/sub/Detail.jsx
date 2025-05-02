@@ -1,9 +1,29 @@
 import React from 'react'
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link, useParams } from 'react-router-dom';
 
 const Detail = () => {
   const [selected, setSelected] = useState('');
   const [selected02, setSelected02] = useState('');
+  const { id } = useParams();
+  const [product, setProduct] = useState(null);
+  
+  useEffect(() => {
+    fetch('/data/items.json')
+      .then((res) => res.json())
+      .then((data) => {
+        const found = data.find(items => items.id === parseInt(id));
+        setProduct(found);
+      });
+  }, [id]);
+
+  if (!product) {
+    return <div>상품을 찾을 수 없습니다.</div>;
+  }
+
+  const rawPrice = product.price.replace(/[^\d]/g, ''); 
+  const price = Number(rawPrice); 
+  const salePrice = Math.floor(price * 0.9); 
 
   const handleChange = (e) => {
     setSelected(e.target.value);
@@ -17,21 +37,21 @@ const Detail = () => {
       <div className='flex justify-between pr-[104px]'>
         <div>
           <div className='flex gap-4 mb-4'>
-            <img src={`${process.env.PUBLIC_URL}/img/item_01.png`} alt="상품" className='block'/>
-            <img src={`${process.env.PUBLIC_URL}/img/item_01.png`} alt="상품" className='fiter_s_01 block'/>
+            <img src={product.image} alt="상품" className='block'/>
+            <img src={product.image} alt="상품" className='fiter_s_01 block'/>
           </div>
           <div className='flex gap-4'>
-            <img src={`${process.env.PUBLIC_URL}/img/item_01.png`} alt="상품" className='fiter_s_02 block '/>
-            <img src={`${process.env.PUBLIC_URL}/img/item_01.png`} alt="상품" className='fiter_s_03 block'/>
+            <img src={product.image} alt="상품" className='fiter_s_02 block '/>
+            <img src={product.image} alt="상품" className='fiter_s_03 block'/>
           </div>
         </div>
       
         <div className='w-[510px]'>
           <span className='font-[Open Sans] text-gray-500 text-[13px]'>Ref.1234567GH</span>
-          <h2 className='font-medium font-[Montserrat] text-[24px] text-gray-900 leading-[1.3]'>Fashion axe vegan single-origin<br />cotton keffiyeh shoe</h2>
+          <h2 className='font-medium font-[Montserrat] text-[24px] text-gray-900 leading-[1.3]'>{product.text}</h2>
           <div className='mt-4'>
-            <span className='font-[Open Sans] text-gray-500 text-[20px] line-through'>\91,000</span>
-            <span className='font-[Open Sans] text-[#FE5335] text-[20px] ml-2'>\70,000</span>
+            <span className='font-[Open Sans] text-gray-500 text-[20px] line-through'>\{price.toLocaleString()}</span>
+            <span className='font-[Open Sans] text-[#FE5335] text-[20px] ml-2'>\{salePrice.toLocaleString()}</span>
           </div>
           <p className='font-[Open Sans] text-gray-500 text-[13px]'>Tax free (21%) outside US</p>
           <p className='font-[Open Sans] text-gray-600 text-[16px] mt-4'>Men’s black technical lace-up sneakers in contrasting materials with a contrasting cotton-tab at the heel.</p>
@@ -81,13 +101,14 @@ const Detail = () => {
       
           <button className='w-full h-[46px] bg-black text-stone-50 block my-4'>Add to bag</button>
       
-          <div className='flex justify-between mt-4'>
-            <span className='font-[Open Sans] text-gray-500 text-[14px] underline'>Product details</span>
-            <div className='flex gap-2'>
-              <span className='font-[Open Sans] text-gray-500 text-[14px]'>Share</span>
-              <img src={`${process.env.PUBLIC_URL}/img/share.svg`} alt="share"/>
+          <div className='flex justify-between items-center mt-4'>
+            <Link to={'/man'}><p className='font-semibold font-[Open Sans] text-[#FE5335] text-[15px] underline'>List</p></Link>
+            <div className='flex items-center gap-2'>
+              <span className='font-[Open Sans] text-gray-500 text-[14px] inline'>Share</span>
+              <img src={`${process.env.PUBLIC_URL}/img/share.svg`} alt="share" className='w-4'/>
             </div>
           </div>
+
         </div>
       </div>
       
