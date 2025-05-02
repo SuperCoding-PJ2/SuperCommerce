@@ -9,6 +9,7 @@ import Login from './components/common/Login';
 import SignUp from './components/common/SignUp';
 import ShoppingCart from './components/sub/ShoppingCart';
 import Detail from './components/sub/Detail';
+import MyAccount from "./components/sub/MyAccount";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path='/signup' element={<SignUp />} />
         <Route path='/shoppingcart' element={<ShoppingCart />} />
         <Route path='/detail' element={<Detail />} />
+        <Route path='/myaccount' element={<MyAccount />} />
       </Routes>
 
       <Footer/>
