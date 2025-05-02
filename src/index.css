@@ -21,3 +21,14 @@
 .swiper-button-prev {
   left: 15px;
 }
+
+.fiter_s_01{
+  opacity: 0.5;
+  filter: brightness(90%) saturate(50%) invert(25%) sepia(79%) saturate(420%) hue-rotate(9deg) brightness(89%) contrast(83%);
+}
+.fiter_s_02{
+  filter: brightness(90%) saturate(50%) invert(25%) sepia(19%) saturate(420%) hue-rotate(90deg) brightness(89%) contrast(83%);
+}
+.fiter_s_03{
+  filter: brightness(90%) saturate(50%) invert(25%) sepia(19%) saturate(420%) hue-rotate(180deg) brightness(89%) contrast(83%);
+}

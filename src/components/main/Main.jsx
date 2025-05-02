@@ -1,20 +1,20 @@
 import React from "react";
 import Layout from "../common/Layout";
-import colors from "tailwindcss/lib/public/colors";
+// import colors from "tailwindcss/lib/public/colors";
 import ProductSlot from "./ProductSlot";
 
 const Main = () => {
   const productList = [
     {
       image: 'shose1.png',
-      name: 'Poke flannel marfa swag slow-carb narwhal',
+      name: 'Poke flannel marfa swag slow-carb narwhal',
       price: '154',
       badge: '-30%',
       badgeColor: 'red',
     },
     {
       image: 'bag1.png',
-      name: 'Thundercats pickled hell of copper mug fashion axel',
+      name: 'Thundercats pickled hell of copper mug fashion axel',
       price: '265',
       badge: '',
       badgeColor: '',
@@ -28,14 +28,14 @@ const Main = () => {
     },
     {
       image: 'shose4.png',
-      name: 'Poke flannel marfa swag slow-carb narwhal',
+      name: 'Poke flannel marfa swag slow-carb narwhal',
       price: '154',
       badge: '-30%',
       badgeColor: 'red',
     },
     {
       image: 'shose3.png',
-      name: 'Thundercats pickled hell of copper mug fashion axel',
+      name: 'Thundercats pickled hell of copper mug fashion axel',
       price: '265',
       badge: '',
       badgeColor: '',
