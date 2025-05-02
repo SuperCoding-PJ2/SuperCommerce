@@ -8,6 +8,7 @@ import List from './components/sub/List';
 import Login from './components/common/Login';
 import SignUp from './components/common/SignUp';
 import ShoppingCart from './components/sub/ShoppingCart';
+import Detail from './components/sub/Detail';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/shoppingcart' element={<ShoppingCart />} />
+        <Route path='/detail' element={<Detail />} />
       </Routes>
 
       <Footer/>
