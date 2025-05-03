@@ -1,5 +1,4 @@
 import React from "react";
-import Layout from "../common/Layout";
 // import colors from "tailwindcss/lib/public/colors";
 import ProductSlot from "./ProductSlot";
 
@@ -51,12 +50,12 @@ const Main = () => {
   ];
 
   return (
-    <Layout>
+    <div>
       <div className="relative h-screen overflow-hidden">
         <img
           src="/img/hero.png"
           alt="Model"
-          className="absolute top-0 left-1/2 -translate-x-1/2  object-cover z-0"
+          className="w-full absolute top-0 left-1/2 -translate-x-1/2  object-cover z-0"
         />
       </div>
 
@@ -64,7 +63,7 @@ const Main = () => {
       <section className="max-w-7xl mx-24">
         <div className="flex flex-col md:flex-row gap-40 justify-center items-start">
           {/* 이미지 박스 – 고정 폭 */}
-          <div className="w-[320px] flex-shrink-0">
+          <div className="w-[320px] flex-shrink-0 mt-[-110px] z-10">
             <img
               src="img/mainSide.png"
               alt="mainSide"
@@ -73,7 +72,7 @@ const Main = () => {
           </div>
 
           {/* 텍스트 박스 – 최대폭 제한 */}
-          <div className="max-w-xl space-y-10">
+          <div className="max-w-xl space-y-10 mt-[70px]">
             <div className="grid grid-cols-2 gap-6 text-sm text-gray-800">
               <ul className="list-disc list-inside space-y-1">
                 <li>Part of our responsible edit</li>
@@ -137,7 +136,7 @@ const Main = () => {
         </div>
       </div>
 
-    </Layout>
+    </div>
   )
 };
 

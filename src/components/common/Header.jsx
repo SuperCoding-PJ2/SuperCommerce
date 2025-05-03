@@ -3,14 +3,20 @@ import { Link } from 'react-router-dom';
 import { useState } from 'react';
 import Menu from './Menu';
 import HamburgerButton from './HamburgerButton';
+import Breadcrumb from './Breadcrumb';
 
-const Header = () => {
+const Header = ({type}) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const isMain = type === 'main';
 
   return (
     <div>
-      <header className='relative w-full h-20'>
-        <div className='flex justify-between items-center w-full bg-gray-200 px-6 h-full'>
+      <header className={`w-full h-20
+      ${isMain ? 'absolute left-0 top-0 z-10' : 'relative'}`}
+    >
+        <div className={`flex justify-between items-center w-full px-6 h-full
+        ${isMain ? 'bg-none' : 'bg-gray-200'}`}
+        >
           <HamburgerButton onClick={() => setIsSidebarOpen(prev => !prev)} />
           <Menu 
             isOpen={isSidebarOpen}
@@ -35,11 +41,12 @@ const Header = () => {
           </Link>
         </h1>
       </header>
-      <div className='border-b p-4 text-gray-400 text-sm flex gap-2'>
-        <span className=''>home</span> <img src={`${process.env.PUBLIC_URL}/img/arrow.svg`} alt="화살표" /> <span>login</span>
-      </div>
+      {!isMain && (
+        <Breadcrumb />
+      )}
     </div>
   )
+  
 }
 
 export default Header

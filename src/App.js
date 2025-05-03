@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
@@ -12,9 +12,12 @@ import Detail from './components/sub/Detail';
 import MyAccount from "./components/sub/MyAccount";
 
 function App() {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
   return (
     <div className="App">
-      <Header/>
+      <Header type={isHome ? 'main' : 'sub'} />
 
       <Routes>
         <Route path='/' element={<Main />} />
