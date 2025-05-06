@@ -9,8 +9,6 @@ const ShoppingCart = () => {
       name: 'Everyday carry blue bottle YOLO neutra, tousled four loko ',
       sku: '12345',
       image: '/img/shose1.png',
-      color: 'Red',
-      colorClass: 'bg-red-500',
       size: 270,
       price: '70,000',
     },
@@ -19,8 +17,6 @@ const ShoppingCart = () => {
       name: 'Carry blue bottle YOLO neutra, tousled four loko ',
       sku: '12346',
       image: '/img/shose2.png',
-      color: 'Black',
-      colorClass: 'bg-black',
       size: 290,
       price: '85,000',
     },
@@ -44,9 +40,8 @@ const ShoppingCart = () => {
           {/* 오른쪽: 테이블 + 리스트 + 합계 */}
           <div className="w-full space-y py-8">
             {/* 테이블 헤더 */}
-            <div className="grid grid-cols-6 border-b border-[#757575] py-3 font-semibold">
+            <div className="grid grid-cols-5 border-b border-[#757575] py-3 font-semibold">
               <div className="col-span-2">Item</div>
-              <div>Color</div>
               <div>Size</div>
               <div>QTY</div>
               <div>Price</div>
@@ -55,17 +50,13 @@ const ShoppingCart = () => {
             {/* 카트 아이템 리스트 */}
             <div className="divide-y ">
               {cartItems.map((item) => (
-                <div key={item.id} className="grid grid-cols-6 py-4 items-center">
+                <div key={item.id} className="grid grid-cols-5 py-4 items-center">
                   <div className="col-span-2 flex items-center gap-4">
                     <img src={item.image} alt={item.name} className="w-16 h-16 object-cover bg-gray-100"/>
-                    <div className="flex flex-col items-start gap-2 max-w-[220px]">
+                    <div className="flex flex-col items-start gap-2 max-w-[310px]">
                       <p className="font-bold text-[#232323]">{item.name}</p>
                       <p className="text-xs text-[#232323]">Sku: {item.sku}</p>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className={`w-4 h-4 ${item.colorClass} rounded-sm`}/>
-                    <span>{item.color}</span>
                   </div>
                   <div>{item.size}</div>
                   <div>
