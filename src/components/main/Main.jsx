@@ -50,7 +50,7 @@ const Main = () => {
   ];
 
   return (
-    <div>
+    <div className="relative before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:top-[calc(100vh-22px)] before:w-[7px] before:h-[22px] before:bg-white before:z-10 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:top-[100vh] after:w-[7px] after:h-[22px] after:bg-black">
       <div className="relative h-screen overflow-hidden">
         <img
           src="/img/hero.png"
@@ -60,7 +60,7 @@ const Main = () => {
       </div>
 
       {/* Product Feature Section */}
-      <section className="max-w-7xl mx-24">
+      <section className="relative max-w-7xl mx-24">
         <div className="flex flex-col md:flex-row gap-40 justify-center items-start">
           {/* 이미지 박스 – 고정 폭 */}
           <div className="w-[320px] flex-shrink-0 mt-[-110px] z-10">
