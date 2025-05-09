@@ -1,25 +1,37 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import Loading from '../common/Loading';
 
 const Detail = () => {
   const [selected, setSelected] = useState('');
   const [selected02, setSelected02] = useState('');
   const { id } = useParams();
   const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   
   useEffect(() => {
+    // 1. 컴포넌트 마운트 시 무조건 스크롤 먼저 실행
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    // 2. 그 다음 로딩 시작
+    setLoading(true);
+
     fetch('/data/items.json')
       .then((res) => res.json())
       .then((data) => {
-        const found = data.find(items => items.id === parseInt(id));
-        setProduct(found);
-      });
+        const found = data.find(items => items.id === parseInt(id, 10)); //parseInt 명시적으로 10진수 지정
+        setProduct(found || null); // null이면 나중에 에러 표시
+      })
+      .catch((error) => {
+        console.error('Fetch error:', error);
+        setProduct(null); // 에러 시에도 null 처리
+      })
+      .finally(() => setLoading(false)); // 요청 끝난 뒤 로딩 false
   }, [id]);
-
-  if (!product) {
-    return <div>상품을 찾을 수 없습니다.</div>;
-  }
+  
+  if (loading) return <Loading />;
+  if (!product) return <div>상품을 찾을 수 없습니다.</div>;
 
   const rawPrice = product.price.replace(/[^\d]/g, ''); 
   const price = Number(rawPrice); 
