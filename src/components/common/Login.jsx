@@ -1,43 +1,74 @@
-import Layout from './Layout'
-import { Link } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from '../../context/AuthContext';
+import { useNavigate, Link } from 'react-router-dom';
+import Layout from '../Layout';
 
 const Login = () => {
+  const [form, setForm] = useState({ email: '', password: '' });
+  const { login, loading } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
+
+  const handleChange = e => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError(null);
+    try {
+      await login(form);
+      navigate('/');
+    } catch (err) {
+      setError('로그인에 실패했습니다.');
+    }
+  };
+
   return (
     <Layout>
-      <div className="flex justify-between mb-[193px]">
-        <h1 className='text-stone-800 font-bold text-[28px] font-[Montserrat]'>Login</h1>
-        <div className='w-[1222px]'>
-          <p className='text-stone-800 text-[16px] leading-[40px] font-bold font-[Montserrat] pt-[5px]'>Sign in to your account</p>
-          <hr className='text-grey-600'></hr>
-          <div className='pt-[11px] flex gap-4 items-end justify-between'>
-            <div className='flex gap-2'>
-              <div>
-                <label className='text-neutral-500 text-[14px] block'>Email<span className='text-orange-600'>*</span></label>
-                <input type="text" className='border-2 border-solid border-grey-600 w-[490px] h-[46px] float-none'/>
-              </div>
-              <div>
-                <label className='text-neutral-500 text-[14px] block'>Password<span className='text-orange-600'>*</span></label>
-                <input type="text" className='border-2 border-solid border-grey-600 w-[490px] h-[46px] float-none'/>
-              </div>
-            </div>
-            <div>
-              <button className='w-[208px] h-[46px] bg-black text-stone-50 block'>Login</button>
-            </div>
-          </div>
-          <div className='flex gap-4 justify-between mt-[20px]'>
-            <div className='flex gap-2'>
-              <button style={{background: `url(${process.env.PUBLIC_URL}/img/user_w.svg) no-repeat left 15px center #33691E` }} className='w-[200px] h-[46px] text-white pl-[55px] text-left'>Google로 로그인</button>
-              <button style={{background: `url(${process.env.PUBLIC_URL}/img/user.svg) no-repeat left 15px center #05C75A`}} className='w-[200px] h-[46px] pl-[55px] text-left'>Naver로 로그인</button>
-              <button style={{background: `url(${process.env.PUBLIC_URL}/img/user.svg) no-repeat left 15px center #FAE100`}} className='w-[200px] h-[46px] pl-[55px] text-left'>Kakao로 로그인</button>
-            </div>
-            <Link to='/signup'>
-              <button className='border-y border-black w-[208px] h-[46px]'>회원가입</button>
-            </Link>
-          </div>
-        </div>
+      <h1>Login</h1>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <label>Email*</label>
+        <input
+          name="email"
+          type="email"
+          value={form.email}
+          onChange={handleChange}
+          required
+          className="border-2 border-gray-300 p-2"
+        />
+        <label>Password*</label>
+        <input
+          name="password"
+          type="password"
+          value={form.password}
+          onChange={handleChange}
+          required
+          className="border-2 border-gray-300 p-2"
+        />
+        {error && <p className="text-red-500">{error}</p>}
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full h-12 bg-black text-white"
+        >
+          {loading ? '로딩중...' : 'Login'}
+        </button>
+      </form>
+      <div className="flex gap-4 mt-6">
+        <button
+          onClick={() => window.location.href = '/api/v1/oauth/authorization/google'}
+        >Google로 로그인</button>
+        <button
+          onClick={() => window.location.href = '/api/v1/oauth/authorization/naver'}
+        >Naver로 로그인</button>
+        <button
+          onClick={() => window.location.href = '/api/v1/oauth/authorization/kakao'}
+        >Kakao로 로그인</button>
       </div>
+      <Link to="/signup" className="mt-4 block">회원가입</Link>
     </Layout>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

@@ -1,78 +1,111 @@
-import React from 'react'
-import Layout from './Layout'
-import { useState, useRef } from 'react';
+import React, {useState, useRef, useContext} from 'react';
+import {AuthContext} from '../../context/AuthContext';
+import {useNavigate} from 'react-router-dom';
+import Layout from '../Layout';
 
-const SignUp = () => {
+const Signup = () => {
   const [imageUrl, setImageUrl] = useState(null);
+  const [file, setFile] = useState(null);
   const fileInputRef = useRef(null);
+  const [form, setForm] = useState({
+    email: '',
+    password: '',
+    phone: '',
+    zipcode: '',
+    address1: '',
+    address2: '',
+    gender: ''
+  });
+  const {signup, loading} = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImageUrl(URL.createObjectURL(file));
+  const handleImageChange = e => {
+    const img = e.target.files[0];
+    if (img) {
+      setFile(img);
+      setImageUrl(URL.createObjectURL(img));
     }
   };
 
   const handleClick = () => {
-    fileInputRef.current.click(); // input 클릭 트리거
+    fileInputRef.current.click();
+  };
+
+  const handleChange = e => {
+    setForm({...form, [e.target.name]: e.target.value});
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+    setError(null);
+    try {
+      const formData = new FormData();
+      formData.append('email', form.email);
+      formData.append('password', form.password);
+      formData.append('phone', form.phone);
+      formData.append('zipcode', form.zipcode);
+      formData.append('address', `${form.address1} ${form.address2}`);
+      formData.append('gender', form.gender);
+      if (file) formData.append('profile', file);
+
+      await signup(formData);
+      navigate('/login');
+    } catch (err) {
+      setError(err.response?.data?.message || '회원가입에 실패했습니다.');
+    }
   };
 
   return (
     <Layout>
-      <div className="flex justify-between">
-        <h1 className='text-stone-800 font-bold text-[28px] font-[Montserrat]'>SignUp</h1>
-        <div className='w-[1222px] flex justify-start gap-12'>
-          <div>
-            <label className='mt-2 text-neutral-500 text-[14px] block'>profile<span className='text-orange-600'>*</span></label>
-            {/* 숨겨진 파일 입력 */}
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleImageChange}
-              className="hidden"
-            />
-
-            {/* 클릭 가능한 동그라미 이미지 */}
-            <div
-              className="w-40 h-40 rounded-full overflow-hidden bg-gray-300 cursor-pointer"
-              onClick={handleClick}
-            >
-              <img
-                src={imageUrl || `${process.env.PUBLIC_URL}/img/profile.svg`} // 기본 이미지 경로 설정
-                alt="Profile"
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-          <div>
-            <div>
-              <label className='mt-2 text-neutral-500 text-[14px] block'>Email<span className='text-orange-600'>*</span></label>
-              <input type="text" className='border-2 border-solid border-grey-600 w-[490px] h-[46px] float-none'/>
-            </div>
-            <div>
-              <label className='mt-2 text-neutral-500 text-[14px] block'>Password<span className='text-orange-600'>*</span></label>
-              <input type="text" className='border-2 border-solid border-grey-600 w-[490px] h-[46px] float-none'/>
-            </div>
-            <div>
-              <label className='mt-2 text-neutral-500 text-[14px] block'>Phone<span className='text-orange-600'>*</span></label>
-              <input type="text" className='border-2 border-solid border-grey-600 w-[490px] h-[46px] float-none'/>
-            </div>
-            <div>
-              <label className='mt-2 text-neutral-500 text-[14px] block'>Zip code<span className='text-orange-600'>*</span></label>
-              <input type="text" className='border-2 border-solid border-grey-600 w-[490px] h-[46px] float-none'/>
-            </div>
-            <div>
-              <label className='mt-2 text-neutral-500 text-[14px] block'>Address<span className='text-orange-600'>*</span></label>
-              <input type="text" className='border-2 border-solid border-grey-600 w-[490px] h-[46px] float-none block'/>
-              <input type="text" className='border-2 border-solid border-grey-600 w-[490px] h-[46px] float-none block mt-2'/>
-            </div>
-            <button className='w-[490px] h-[46px] bg-black text-stone-50 block mt-[34px] mb-[100px]'>Sign Up</button>
+      <h1 className='text-stone-800 font-bold text-[28px]'>Sign Up</h1>
+      <form onSubmit={handleSubmit} className='flex gap-12 mt-6'>
+        <div>
+          <label className='block text-neutral-500'>Profile *</label>
+          <input type='file' accept='image/*' ref={fileInputRef} onChange={handleImageChange} className='hidden'/>
+          <div onClick={handleClick} className='w-40 h-40 rounded-full bg-gray-300 overflow-hidden cursor-pointer'>
+            <img src={imageUrl || `${process.env.PUBLIC_URL}/img/profile.svg`} alt='Profile'
+                 className='w-full h-full object-cover'/>
           </div>
         </div>
-      </div>
-    </Layout>
-  )
-}
 
-export default SignUp
+        <div className='flex flex-col gap-4 w-[490px]'>
+          <label>Email *</label>
+          <input name='email' type='email' value={form.email} onChange={handleChange} required className='border p-2'/>
+
+          <label>Password *</label>
+          <input name='password' type='password' value={form.password} onChange={handleChange} required
+                 className='border p-2'/>
+
+          <label>Phone *</label>
+          <input name='phone' type='text' value={form.phone} onChange={handleChange} required className='border p-2'/>
+
+          <label>Zip code *</label>
+          <input name='zipcode' type='text' value={form.zipcode} onChange={handleChange} required
+                 className='border p-2'/>
+
+          <label>Address *</label>
+          <input name='address1' type='text' placeholder='Address line 1' value={form.address1} onChange={handleChange}
+                 required className='border p-2'/>
+          <input name='address2' type='text' placeholder='Address line 2' value={form.address2} onChange={handleChange}
+                 className='border p-2'/>
+
+          <label>Gender *</label>
+          <select name='gender' value={form.gender} onChange={handleChange} required className='border p-2'>
+            <option value=''>선택하세요</option>
+            <option value='male'>남성</option>
+            <option value='female'>여성</option>
+          </select>
+
+          {error && <p className='text-red-500'>{error}</p>}
+
+          <button type='submit' disabled={loading} className='w-full h-12 bg-black text-white mt-4'>
+            {loading ? '로딩중...' : 'Sign Up'}
+          </button>
+        </div>
+      </form>
+    </Layout>
+  );
+};
+
+export default Signup;
