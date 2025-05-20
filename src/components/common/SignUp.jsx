@@ -1,7 +1,7 @@
 import React, {useState, useRef, useContext} from 'react';
 import {AuthContext} from '../../context/AuthContext';
 import {useNavigate} from 'react-router-dom';
-import Layout from '../Layout';
+import Layout from './Layout';
 
 const Signup = () => {
   const [imageUrl, setImageUrl] = useState(null);

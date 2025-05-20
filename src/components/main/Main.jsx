@@ -1,9 +1,42 @@
-import React from "react";
-// import colors from "tailwindcss/lib/public/colors";
+// src/components/Main.jsx
+import React, {useState, useEffect} from "react";
 import ProductSlot from "./ProductSlot";
+import {getProducts} from "../../services/ProductService";
 
 const Main = () => {
-  const productList = [
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+
+  // 상품 데이터 가져오기
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await getProducts({page, size: 6});
+        setProducts(response.content);
+        setTotalPages(response.totalPages);
+        setLoading(false);
+      } catch (err) {
+        setError('상품 데이터를 불러오는 중 오류가 발생했습니다.');
+        setLoading(err);
+      }
+    };
+
+    fetchProducts();
+  }, [page]);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (newPage) => {
+    if (newPage >= 0 && newPage < totalPages) {
+      setPage(newPage);
+    }
+  };
+
+  // 기존 하드코딩된 상품 리스트
+  const staticProductList = [
     {
       image: 'shose1.png',
       name: 'Poke flannel marfa swag slow-carb narwhal',
@@ -11,51 +44,35 @@ const Main = () => {
       badge: '-30%',
       badgeColor: 'red',
     },
-    {
-      image: 'bag1.png',
-      name: 'Thundercats pickled hell of copper mug fashion axel',
-      price: '265',
-      badge: '',
-      badgeColor: '',
-    },
-    {
-      image: 'bag2.png',
-      name: 'Vape lomo occupy viral austin',
-      price: '26,40',
-      badge: 'Free shipping',
-      badgeColor: 'black',
-    },
-    {
-      image: 'shose4.png',
-      name: 'Poke flannel marfa swag slow-carb narwhal',
-      price: '154',
-      badge: '-30%',
-      badgeColor: 'red',
-    },
-    {
-      image: 'shose3.png',
-      name: 'Thundercats pickled hell of copper mug fashion axel',
-      price: '265',
-      badge: '',
-      badgeColor: '',
-    },
-    {
-      image: 'shose2.png',
-      name: 'Vape lomo occupy viral austin',
-      price: '26,40',
-      badge: 'Free shipping',
-      badgeColor: 'black',
-    },
-    // ... more products
+    // ... 기타 하드코딩된 상품들
   ];
 
+  // 데이터 로딩 중인 경우 로딩 표시
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p>상품을 불러오는 중입니다...</p>
+      </div>
+    );
+  }
+
+  // 오류 발생 시 오류 메시지 표시
+  if (error) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:top-[calc(100vh-22px)] before:w-[7px] before:h-[22px] before:bg-white before:z-10 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:top-[100vh] after:w-[7px] after:h-[22px] after:bg-black">
+    <div
+      className="relative before:content-[''] before:absolute before:left-1/2 before:-translate-x-1/2 before:top-[calc(100vh-22px)] before:w-[7px] before:h-[22px] before:bg-white before:z-10 after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:top-[100vh] after:w-[7px] after:h-[22px] after:bg-black">
       <div className="relative h-screen overflow-hidden">
         <img
           src="/img/hero.png"
           alt="Model"
-          className="w-full absolute top-0 left-1/2 -translate-x-1/2  object-cover z-0"
+          className="w-full absolute top-0 left-1/2 -translate-x-1/2 object-cover z-0"
         />
       </div>
 
@@ -95,9 +112,7 @@ const Main = () => {
                 A woman has the age she deserves. Luxury will be always around, no
                 matter what happens in the world. I've always thought of the T-shirt
                 as the Alpha and Omega of the fashion alphabet. It links everything
-                in between. I didn’t have a place to escape to. I am like a freight
-                train. Working on the details, visiting them and playing with them
-                over the years, but always staying on the same track.
+                in between.
               </p>
               <p>
                 The Parisian heart dictates for plenty of light fabrics - loose
@@ -110,34 +125,81 @@ const Main = () => {
         </div>
       </section>
 
-      {/* Product Grid */}
-      <div className="flex justify-center ">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-8 md:px-16 py-20 ">
-          {productList.map((product, i) => (
-            <ProductSlot key={i} {...product} />
-          ))}
+      {/* Products Section */}
+      <section className="py-16 px-8 bg-gray-50">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl font-bold mb-8 text-center">최신 상품</h2>
+
+          {/* API에서 불러온 상품 목록 */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {products.map((product) => (
+              <ProductSlot
+                key={product.id}
+                id={product.id}
+                imageUrl={product.imageUrl}
+                name={product.name}
+                price={product.price}
+                badge={product.stock < 10 ? '잔여 수량 적음' : ''}
+                badgeColor={product.stock < 10 ? 'red' : ''}
+              />
+            ))}
+          </div>
+
+          {/* 페이지네이션 */}
+          {totalPages > 1 && (
+            <div className="flex justify-center mt-8">
+              <button
+                onClick={() => handlePageChange(page - 1)}
+                disabled={page === 0}
+                className="mx-1 px-3 py-1 border rounded disabled:opacity-50"
+              >
+                이전
+              </button>
+
+              {[...Array(totalPages).keys()].map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => handlePageChange(pageNum)}
+                  className={`mx-1 px-3 py-1 border rounded ${
+                    pageNum === page ? 'bg-black text-white' : ''
+                  }`}
+                >
+                  {pageNum + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() => handlePageChange(page + 1)}
+                disabled={page === totalPages - 1}
+                className="mx-1 px-3 py-1 border rounded disabled:opacity-50"
+              >
+                다음
+              </button>
+            </div>
+          )}
         </div>
-      </div>
+      </section>
 
-      {/* Promo Banner */}
-      <div className="relative overflow-hidden">
-        <img
-          src="/img/ad.png"
-          alt="Model"
-          className="w-full object-cover"
-        />
-
-        {/* 오버레이 박스 */}
-        <div className="absolute top-1/2 left-1/4 -translate-y-1/2 px-6 py-4 text-center">
-          <h2 className="text-4xl font-bold text-[#2E2E2E]">70% off</h2>
-          <div className="border border-[#2E2E2E] text-[#2E2E2E] px-4 py-1 text-sm font-semibold">
-            Shop now
+      {/* 추천 상품 (정적 데이터로 유지) */}
+      <section className="py-16 px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl font-bold mb-8 text-center">추천 상품</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+            {staticProductList.slice(0, 3).map((product, index) => (
+              <ProductSlot
+                key={index}
+                image={product.image}
+                name={product.name}
+                price={product.price}
+                badge={product.badge}
+                badgeColor={product.badgeColor}
+              />
+            ))}
           </div>
         </div>
-      </div>
-
+      </section>
     </div>
-  )
+  );
 };
 
 export default Main;

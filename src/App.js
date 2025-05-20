@@ -18,7 +18,6 @@ function App() {
   return (
     <div className="App">
       <Header type={isHome ? 'main' : 'sub'} />
-
       <Routes>
         <Route path='/' element={<Main />} />
         <Route path='/about' element={<About />} />
@@ -29,7 +28,6 @@ function App() {
         <Route path='/detail/:id' element={<Detail />} />
         <Route path='/myaccount' element={<MyAccount />} />
       </Routes>
-
       <Footer/>
     </div>
   );
