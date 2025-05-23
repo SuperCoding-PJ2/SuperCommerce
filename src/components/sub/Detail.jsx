@@ -1,162 +1,84 @@
-import React from 'react'
-import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import Loading from '../common/Loading';
+import { getProductById } from '../../services/ProductService';
 
 const Detail = () => {
-  const [selected, setSelected] = useState('');
-  const [selected02, setSelected02] = useState('');
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+  const [size, setSize] = useState('');
+  const [quantity, setQuantity] = useState(1);
+
   useEffect(() => {
-    // 1. 컴포넌트 마운트 시 무조건 스크롤 먼저 실행
     window.scrollTo({ top: 0, behavior: 'smooth' });
-
-    // 2. 그 다음 로딩 시작
-    setLoading(true);
-
-    fetch('/data/items.json')
-      .then((res) => res.json())
-      .then((data) => {
-        const found = data.find(items => items.id === parseInt(id, 10)); //parseInt 명시적으로 10진수 지정
-        setProduct(found || null); // null이면 나중에 에러 표시
-      })
-      .catch((error) => {
-        console.error('Fetch error:', error);
-        setProduct(null); // 에러 시에도 null 처리
-      })
-      .finally(() => setLoading(false)); // 요청 끝난 뒤 로딩 false
+    getProductById(id)
+        .then(data => setProduct(data))
+        .catch(console.error)
+        .finally(() => setLoading(false));
   }, [id]);
-  
+
   if (loading) return <Loading />;
   if (!product) return <div>상품을 찾을 수 없습니다.</div>;
 
-  const rawPrice = product.price.replace(/[^\d]/g, ''); 
-  const price = Number(rawPrice); 
-  const salePrice = Math.floor(price * 0.9); 
-
-  const handleChange = (e) => {
-    setSelected(e.target.value);
-  };
-  const handleChange02 = (e) => {
-    setSelected02(e.target.value);
-  };
+  const rawPrice = Number(product.price.toString().replace(/[^\d]/g, ''));
+  const salePrice = Math.floor(rawPrice * 0.9);
 
   return (
-    <div className='w-[1600px] mx-auto my-8'>
-      <div className='flex justify-between pr-[104px]'>
-        <div>
-          <div className='flex gap-4 mb-4'>
-            <img src={product.image} alt="상품" className='block'/>
-            <img src={product.image} alt="상품" className='fiter_s_01 block'/>
+      <div className='w-[1600px] mx-auto my-8'>
+        <div className='flex justify-between pr-[104px]'>
+          {/* 이미지 갤러리 (간단화) */}
+          <div>
+            <img src={product.image} alt="" className='block mb-4'/>
           </div>
-          <div className='flex gap-4'>
-            <img src={product.image} alt="상품" className='fiter_s_02 block '/>
-            <img src={product.image} alt="상품" className='fiter_s_03 block'/>
-          </div>
-        </div>
-      
-        <div className='w-[510px]'>
-          <span className='font-[Open Sans] text-gray-500 text-[13px]'>Ref.1234567GH</span>
-          <h2 className='font-medium font-[Montserrat] text-[24px] text-gray-900 leading-[1.3]'>{product.text}</h2>
-          <div className='mt-4'>
-            <span className='font-[Open Sans] text-gray-500 text-[20px] line-through'>\{price.toLocaleString()}</span>
-            <span className='font-[Open Sans] text-[#FE5335] text-[20px] ml-2'>\{salePrice.toLocaleString()}</span>
-          </div>
-          <p className='font-[Open Sans] text-gray-500 text-[13px]'>Tax free (21%) outside US</p>
-          <p className='font-[Open Sans] text-gray-600 text-[16px] mt-4'>Men’s black technical lace-up sneakers in contrasting materials with a contrasting cotton-tab at the heel.</p>
-          <div className='mt-2'>
-            <span className='font-[Open Sans] text-gray-500 text-[14px] underline'>Product details</span>
-            <span className='font-[Open Sans] text-gray-500 text-[14px] underline ml-4'>Size guide</span>
-          </div>
-      
-          <div className='mt-4 flex justify-between '>
-            <div className='flex gap-2'>
-              <div className='w-[22px] h-[22px] bg-black'></div>
-              <div className='w-[22px] h-[22px] bg-[#DFD497]'></div>
-              <div className='w-[22px] h-[22px] bg-[#7DA28B]'></div>
-              <div className='w-[22px] h-[22px] bg-[#8B9AB5]'></div>
+
+          {/* 상품 정보 */}
+          <div className='w-[510px]'>
+            <span className='text-gray-500'>Ref.{product.id}</span>
+            <h2 className='text-[24px] font-medium'>{product.text}</h2>
+
+            <div className='mt-4'>
+              <span className='line-through'>{rawPrice.toLocaleString()}</span>
+              <span className='ml-2 text-[#FE5335]'>{salePrice.toLocaleString()}</span>
             </div>
-            <p className='font-[Open Sans] text-gray-500 text-[14px]'>Black</p>
-          </div>
-      
-          <div className='w-full mt-12'>
-            <label htmlFor="select" className="block text-sm font-medium text-gray-700 mb-1"></label>
-            <select
-              id="select"
-              value={selected}
-              onChange={handleChange}
-              className="block w-full px-3 py-2 border-t border-b border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="">Choose youre size</option>
-              <option value="option1">310</option>
-              <option value="option2">300</option>
-              <option value="option3">270</option>
+
+            <p className='mt-4'>{product.description}</p>
+
+            {/* 옵션 선택 */}
+            <select value={size} onChange={e => setSize(e.target.value)} className='mt-4 w-full border p-2'>
+              <option value="">Size</option>
+              {product.availableSizes?.map(s => (
+                  <option key={s} value={s}>{s}</option>
+              ))}
             </select>
-          </div>
-          <div className='w-full mt-4'>
-            <label htmlFor="select" className="block text-sm font-medium text-gray-700 mb-1"></label>
-            <select
-              id="select"
-              value={selected02}
-              onChange={handleChange02}
-              className="block w-full px-3 py-2 border-t border-b border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-            >
-              <option value="option1">1</option>
-              <option value="option2">2</option>
-              <option value="option3">3</option>
-              <option value="option4">4</option>
+
+            <select value={quantity} onChange={e => setQuantity(+e.target.value)} className='mt-4 w-full border p-2'>
+              {[...Array(10)].map((_, i) => (
+                  <option key={i+1} value={i+1}>{i+1}</option>
+              ))}
             </select>
-          </div>
-      
-          <button className='w-full h-[46px] bg-black text-stone-50 block my-4'>Add to bag</button>
-      
-          <div className='flex justify-between items-center mt-4'>
-            <Link to={'/man'}><p className='font-semibold font-[Open Sans] text-[#FE5335] text-[15px] underline'>List</p></Link>
-            <div className='flex items-center gap-2'>
-              <span className='font-[Open Sans] text-gray-500 text-[14px] inline'>Share</span>
-              <img src={`${process.env.PUBLIC_URL}/img/share.svg`} alt="share" className='w-4'/>
+
+            <button className='w-full h-[46px] bg-black text-white mt-4'>Add to bag</button>
+
+            <div className='flex justify-between mt-4'>
+              <Link to='/man' className='underline text-[#FE5335]'>List</Link>
             </div>
           </div>
-
-        </div>
-      </div>
-      
-      <div className='flex justify-start gap-12 mt-12 ml-[180px]'>
-        <div className='w-[350px]'>
-          <h3 className='font-medium font-[Montserrat] text-[18px] text-gray-900 my-4'>Product details</h3>
-          <p className='font-[Open Sans] text-gray-600 text-[16px]'>
-          Tote bag mlkshk humblebrag leggings normcore authentic mustache. Chartreuse swag brunch chillwave keytar shabby chic synth jianbing wolf pork belly jean shorts trust fund ugh hot chicken blog. Flexitarian pickled vape asymmetrical man braid chia hot chicken vinyl. Prism wolf keffiyeh cornhole snackwave roof party next leve
-          </p>
-
-          <ul className='mt-12 text-gray-600'>
-            <li>•  Green juice flexitarian jean shorts</li>
-            <li>•  Stumptown mumblecore asymmetrical ugh</li>
-            <li>•  Fashion axe vegan single-origin</li>
-          </ul>
         </div>
 
-        <div className='w-[350px]'>
-          <h3 className='font-medium font-[Montserrat] text-[18px] text-gray-900 my-4'>Information</h3>
-          <ul className='text-gray-600'>
-            <li>•  Green juice flexitarian jean shorts</li>
-            <li>•  Stumptown mumblecore asymmetrical ugh</li>
-            <li>•  Fashion axe vegan single-origin</li>
-          </ul>
-          <p className='font-[Open Sans] text-gray-600 text-[16px] mt-4'>
-          Af offal letterpress, poutine ramps man bun intelligentsia kogi you probably haven't heard of them. Pickled aesthetic gochujang polaroid
-          </p>
-          <div className='mt-4'>
-            <span className='font-[Open Sans] text-gray-700 text-[14px] font-bold underline'>Delivery</span>
-            <span className='font-[Open Sans] text-gray-700 text-[14px] font-bold underline ml-8'>Return</span>
-            <span className='font-[Open Sans] text-gray-700 text-[14px] font-bold underline ml-8'>Help</span>
+        {/* 상세 정보 */}
+        <div className='mt-12 grid grid-cols-2 gap-12 px-[180px]'>
+          <div>
+            <h3 className='text-[18px] font-medium mb-4'>Product details</h3>
+            <p>{product.details}</p>
+          </div>
+          <div>
+            <h3 className='text-[18px] font-medium mb-4'>Information</h3>
+            <p>{product.info}</p>
           </div>
         </div>
       </div>
-    </div>
-  )
-}
+  );
+};
 
-export default Detail
+export default Detail;
