@@ -1,12 +1,13 @@
 // src/components/ProductSlot.jsx
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const ProductSlot = ({ id, imageUrl, name, price, badge, badgeColor = 'black' }) => {
   // API에서 받은 이미지가 없으면 기본 이미지 사용
   const displayImage = imageUrl || "/img/default-product.png";
 
   return (
-    <div className="bg-white rounded-lg text-left relative">
+    <Link to={`/detail/${id}`} className="block bg-white rounded-lg text-left relative hover:shadow-lg transition-shadow">
       {badge && (
         <span
           className={`absolute top-2 left-2 text-xs px-2 py-1 rounded ${
@@ -25,7 +26,7 @@ const ProductSlot = ({ id, imageUrl, name, price, badge, badgeColor = 'black' })
         </p>
         <p className="text-sm text-gray-700">{price?.toLocaleString()}원</p>
       </div>
-    </div>
+    </Link>
   );
 };
 

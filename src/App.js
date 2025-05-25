@@ -1,4 +1,6 @@
-import { Route, Routes, useLocation } from 'react-router-dom';
+// App.js 수정
+import {Route, Routes, useLocation, Navigate} from 'react-router-dom';
+import {useContext} from 'react';
 
 import Footer from './components/common/Footer';
 import Header from './components/common/Header';
@@ -11,29 +13,58 @@ import ShoppingCart from './components/sub/ShoppingCart';
 import Detail from './components/sub/Detail';
 import MyAccount from "./components/sub/MyAccount";
 import OAuth2RedirectHandler from "./handler/OAuth2RedirectHandler";
+import {AuthProvider, AuthContext} from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import {ToastContainer} from "react-toastify";
 
-function App() {
+function AppRoutes() {
   const location = useLocation();
   const isHome = location.pathname === '/';
+  const { initialized, token } = useContext(AuthContext);
+
+  if (!initialized) return null;
 
   return (
     <div className="App">
       <Header type={isHome ? 'main' : 'sub'} />
       <Routes>
-        <Route path='/' element={<Main />} />
-        <Route path='/about' element={<About />} />
-        <Route path='/man' element={<List />} />
-        <Route path='/login' element={<Login />} />
-        <Route path='/signup' element={<SignUp />} />
-        {/* OAuth2 콜백 처리 */}
+        <Route path="/" element={<Main />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/man" element={<List />} />
+
+        {/* ✅ 로그인 상태면 /myaccount로 리디렉트, 아니면 로그인 컴포넌트 */}
+        <Route
+          path="/login"
+          element={token ? <Navigate to="/myaccount" replace /> : <Login />}
+        />
+
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
-        {/* 보호된 페이지 등 */}
-        <Route path='/shoppingcart' element={<ShoppingCart />} />
-        <Route path='/detail/:id' element={<Detail />} />
-        <Route path='/myaccount' element={<MyAccount />} />
+        <Route path="/shoppingcart" element={<ShoppingCart />} />
+        <Route path="/detail/:id" element={<Detail />} />
+
+        {/* 보호된 페이지 */}
+        <Route
+          path="/myaccount"
+          element={
+            <ProtectedRoute>
+              <MyAccount />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
-      <Footer/>
+
+      <Footer />
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   );
 }
 

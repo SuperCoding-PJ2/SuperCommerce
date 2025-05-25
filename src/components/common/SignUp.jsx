@@ -1,94 +1,266 @@
-import React, {useState, useRef, useContext} from 'react';
-import {AuthContext, AuthProvider} from '../../context/AuthContext';
-import {useNavigate} from 'react-router-dom';
-import Layout from './Layout';
+import React, { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
+import Layout from '../common/Layout';
 
-const SignupContent = () => {
-  const [form, setForm] = useState({
+const Signup = () => {
+  const navigate = useNavigate();
+  const { signup } = useContext(AuthContext);
+
+  const [formData, setFormData] = useState({
     email: '',
     password: '',
+    name: '',
     phone: '',
-    zipcode: '',
-    address1: '',
-    address2: '',
+    address: '',
     gender: ''
   });
-  const {signup, loading} = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [error, setError] = useState(null);
 
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setError(null);
+  const validate = () => {
+    const newErrors = {};
 
-    // 주소 합치기
-    const fullAddress = `${form.zipcode} ${form.address1} ${form.address2}`;
+    // 이메일 검증
+    if (!formData.email) {
+      newErrors.email = '이메일을 입력해주세요';
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = '올바른 이메일 형식이 아닙니다';
+    }
+
+    // 비밀번호 검증
+    if (!formData.password) {
+      newErrors.password = '비밀번호를 입력해주세요';
+    } else if (formData.password.length < 8) {
+      newErrors.password = '비밀번호는 최소 8자 이상이어야 합니다';
+    }
+
+    // 비밀번호 확인 검증
+    if (confirmPassword !== formData.password) {
+      newErrors.confirmPassword = '비밀번호가 일치하지 않습니다';
+    }
+
+    // 이름 검증
+    if (!formData.name) {
+      newErrors.name = '이름을 입력해주세요';
+    }
+
+    // 전화번호 검증
+    if (!formData.phone) {
+      newErrors.phone = '전화번호를 입력해주세요';
+    } else if (!/^\d{10,11}$/.test(formData.phone.replace(/-/g, ''))) {
+      newErrors.phone = '올바른 전화번호 형식이 아닙니다';
+    }
+
+    // 주소 검증
+    if (!formData.address) {
+      newErrors.address = '주소를 입력해주세요';
+    }
+
+    // 성별 검증
+    if (!formData.gender) {
+      newErrors.gender = '성별을 선택해주세요';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
+
+    setIsSubmitting(true);
 
     try {
-      await signup({
-        email: form.email,
-        password: form.password,
-        phone: form.phone,
-        address: fullAddress,
-        gender: form.gender
-      });
+      await signup(formData);
+      alert('회원가입이 완료되었습니다! 로그인해주세요.');
       navigate('/login');
-    } catch (err) {
-      setError(err.response?.data?.message || '회원가입에 실패했습니다.');
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+
+      if (error.response?.data?.message) {
+        alert(`회원가입 실패: ${error.response.data.message}`);
+      } else {
+        alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <Layout>
-      <h1 className='text-stone-800 font-bold text-[28px]'>Sign Up</h1>
-      <form onSubmit={handleSubmit} className='flex gap-12 mt-6'>
-        <div className='flex flex-col gap-4 w-[490px]'>
-          <label>Email *</label>
-          <input name='email' type='email' value={form.email} onChange={handleChange} required className='border p-2'/>
+      <div className="max-w-md mx-auto p-6">
+        <h1 className="text-2xl font-bold mb-6 text-center">회원가입</h1>
 
-          <label>Password *</label>
-          <input name='password' type='password' value={form.password} onChange={handleChange} required
-                 className='border p-2'/>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* 이메일 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              이메일
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
+              placeholder="user@example.com"
+            />
+            {errors.email && (
+              <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+            )}
+          </div>
 
-          <label>Phone *</label>
-          <input name='phone' type='text' value={form.phone} onChange={handleChange} required className='border p-2'/>
+          {/* 비밀번호 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              비밀번호
+            </label>
+            <input
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
+              placeholder="8자 이상 입력해주세요"
+            />
+            {errors.password && (
+              <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+            )}
+          </div>
 
-          <label>Zip code *</label>
-          <input name='zipcode' type='text' value={form.zipcode} onChange={handleChange} required
-                 className='border p-2'/>
+          {/* 비밀번호 확인 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              비밀번호 확인
+            </label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
+              placeholder="비밀번호를 다시 입력해주세요"
+            />
+            {errors.confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
+            )}
+          </div>
 
-          <label>Address *</label>
-          <input name='address1' type='text' placeholder='Address line 1' value={form.address1} onChange={handleChange}
-                 required className='border p-2'/>
-          <input name='address2' type='text' placeholder='Address line 2' value={form.address2} onChange={handleChange}
-                 className='border p-2'/>
+          {/* 이름 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              이름
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
+              placeholder="홍길동"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-xs mt-1">{errors.name}</p>
+            )}
+          </div>
 
-          <label>Gender *</label>
-          <select name='gender' value={form.gender} onChange={handleChange} required className='border p-2'>
-            <option value=''>선택하세요</option>
-            <option value='male'>남성</option>
-            <option value='female'>여성</option>
-          </select>
+          {/* 전화번호 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              전화번호
+            </label>
+            <input
+              type="tel"
+              name="phone"
+              value={formData.phone}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
+              placeholder="01012345678"
+            />
+            {errors.phone && (
+              <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
+            )}
+          </div>
 
-          {error && <p className='text-red-500'>{error}</p>}
+          {/* 주소 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              주소
+            </label>
+            <input
+              type="text"
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-black"
+              placeholder="서울특별시 강남구 역삼동"
+            />
+            {errors.address && (
+              <p className="text-red-500 text-xs mt-1">{errors.address}</p>
+            )}
+          </div>
 
-          <button type='submit' disabled={loading} className='w-full h-12 bg-black text-white mt-4'>
-            {loading ? '로딩중...' : 'Sign Up'}
+          {/* 성별 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              성별
+            </label>
+            <div className="flex gap-4">
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="M"
+                  checked={formData.gender === 'M'}
+                  onChange={handleChange}
+                  className="h-4 w-4"
+                />
+                <span className="ml-2 text-sm">남성</span>
+              </label>
+              <label className="inline-flex items-center">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="F"
+                  checked={formData.gender === 'F'}
+                  onChange={handleChange}
+                  className="h-4 w-4"
+                />
+                <span className="ml-2 text-sm">여성</span>
+              </label>
+            </div>
+            {errors.gender && (
+              <p className="text-red-500 text-xs mt-1">{errors.gender}</p>
+            )}
+          </div>
+
+          {/* 제출 버튼 */}
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-black text-white py-2 px-4 rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black disabled:opacity-50"
+          >
+            {isSubmitting ? '처리 중...' : '회원가입'}
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </Layout>
   );
 };
 
-export default function Signup() {
-  return (
-    <AuthProvider>
-      <SignupContent/>
-    </AuthProvider>
-  );
-}
+export default Signup;

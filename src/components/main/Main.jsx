@@ -1,7 +1,7 @@
 // src/components/Main.jsx
 import React, {useState, useEffect} from "react";
 import ProductSlot from "./ProductSlot";
-import {getProducts} from "../../services/ProductService";
+import {getProducts} from "../../services/productService";
 
 const Main = () => {
   const [products, setProducts] = useState([]);
@@ -139,7 +139,7 @@ const Main = () => {
                 imageUrl={product.imageUrl}
                 name={product.name}
                 price={product.price}
-                badge={product.stock < 10 ? '잔여 수량 적음' : ''}
+                badge={product.stock <= 0 ? '매진' : ''}
                 badgeColor={product.stock < 10 ? 'red' : ''}
               />
             ))}
@@ -177,25 +177,6 @@ const Main = () => {
               </button>
             </div>
           )}
-        </div>
-      </section>
-
-      {/* 추천 상품 (정적 데이터로 유지) */}
-      <section className="py-16 px-8">
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl font-bold mb-8 text-center">추천 상품</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {staticProductList.slice(0, 3).map((product, index) => (
-              <ProductSlot
-                key={index}
-                image={product.image}
-                name={product.name}
-                price={product.price}
-                badge={product.badge}
-                badgeColor={product.badgeColor}
-              />
-            ))}
-          </div>
         </div>
       </section>
     </div>

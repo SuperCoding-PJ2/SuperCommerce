@@ -1,14 +1,25 @@
 /* src/services/authService.js */
 import axios from 'axios';
 
+// 백엔드 서버 URL 설정
+const API_BASE_URL = 'http://52.79.184.1:8080';
+
 const API = axios.create({
-  baseURL: 'http://52.79.184.1:8080/api/v1/auth',
+  baseURL: `${API_BASE_URL}/api/v1/auth`,
 });
 
-export const signup = async ({ email, password, phone, address, gender }) => {
-  const res = await API.post('/signup', { email, password, phone, address, gender });
-  return res.data;
+export const signup = async (userData) => {
+  try {
+    console.log('signup', userData);
+    // API 인스턴스 사용하여 요청
+    const response = await API.post('/signup', userData);
+    return response.data;
+  } catch (error) {
+    console.error('Signup error:', error);
+    throw error;
+  }
 };
+
 
 // 프로필 이미지 업데이트 함수 추가
 export const updateProfileImage = async (imageFile) => {

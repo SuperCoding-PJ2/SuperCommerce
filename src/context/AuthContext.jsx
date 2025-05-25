@@ -3,17 +3,35 @@ import React, { createContext, useState, useEffect } from 'react';
 import { signup as apiSignup, login as apiLogin, logout as apiLogout } from '../services/authService';
 import axios from 'axios';
 
+const API_BASE_URL = 'http://52.79.184.1:8080';
+
+const API = axios.create({
+  baseURL: API_BASE_URL,
+});
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [initialized, setInitialized] = useState(false); // ✅ 추가
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken) {
+      setToken(storedToken);
+    }
+    setInitialized(true); // ✅ 초기화 완료 시점
+  }, []);
 
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      API.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     } else {
       delete axios.defaults.headers.common['Authorization'];
+      delete API.defaults.headers.common['Authorization'];
     }
   }, [token]);
 
@@ -40,8 +58,7 @@ export const AuthProvider = ({ children }) => {
   const oauthLogin = async ({ provider, code }) => {
     setLoading(true);
     try {
-      // 백엔드에서 code 교환 후 JWT 리턴
-      const res = await axios.get(`/api/v1/auth/oauth2/code/${provider}?code=${code}`);
+      const res = await API.get(`/api/v1/auth/oauth2/code/${provider}?code=${code}`);
       const jwt = res.data.token;
       localStorage.setItem('token', jwt);
       setToken(jwt);
@@ -54,10 +71,11 @@ export const AuthProvider = ({ children }) => {
     await apiLogout();
     localStorage.removeItem('token');
     setToken(null);
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ token, loading, signup, login, oauthLogin, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, initialized, signup, login, oauthLogin, logout }}>
       {children}
     </AuthContext.Provider>
   );
