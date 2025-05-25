@@ -5,22 +5,9 @@ const API = axios.create({
   baseURL: 'http://52.79.184.1:8080/api/v1/auth',
 });
 
-export const signup = async (formData) => {
-  // FormData 객체인 경우 (프로필 이미지 포함)
-  if (formData instanceof FormData) {
-    const res = await API.post('/signup', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    });
-    return res.data;
-  }
-  // JSON 객체인 경우 (기존 호환성 유지)
-  else {
-    const {email, password, phone, address, gender} = formData;
-    const res = await API.post('/signup', {email, password, phone, address, gender});
-    return res.data;
-  }
+export const signup = async ({ email, password, phone, address, gender }) => {
+  const res = await API.post('/signup', { email, password, phone, address, gender });
+  return res.data;
 };
 
 // 프로필 이미지 업데이트 함수 추가

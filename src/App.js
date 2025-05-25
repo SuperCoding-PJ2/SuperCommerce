@@ -10,6 +10,7 @@ import SignUp from './components/common/SignUp';
 import ShoppingCart from './components/sub/ShoppingCart';
 import Detail from './components/sub/Detail';
 import MyAccount from "./components/sub/MyAccount";
+import OAuth2RedirectHandler from "./handler/OAuth2RedirectHandler";
 
 function App() {
   const location = useLocation();
@@ -24,6 +25,9 @@ function App() {
         <Route path='/man' element={<List />} />
         <Route path='/login' element={<Login />} />
         <Route path='/signup' element={<SignUp />} />
+        {/* OAuth2 콜백 처리 */}
+        <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
+        {/* 보호된 페이지 등 */}
         <Route path='/shoppingcart' element={<ShoppingCart />} />
         <Route path='/detail/:id' element={<Detail />} />
         <Route path='/myaccount' element={<MyAccount />} />

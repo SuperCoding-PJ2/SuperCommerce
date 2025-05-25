@@ -1,16 +1,17 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
+import React, {useState, useContext} from 'react';
+import {AuthContext, AuthProvider} from '../../context/AuthContext';
+import {useNavigate, Link} from 'react-router-dom';
 import Layout from './Layout';
 
-const Login = () => {
-  const [form, setForm] = useState({ email: '', password: '' });
-  const { login, loading } = useContext(AuthContext);
+
+const LoginContent = () => {
+  const [form, setForm] = useState({email: '', password: ''});
+  const {login, loading} = useContext(AuthContext);
   const navigate = useNavigate();
   const [error, setError] = useState(null);
 
   const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({...form, [e.target.name]: e.target.value});
   };
 
   const handleSubmit = async e => {
@@ -58,17 +59,26 @@ const Login = () => {
       <div className="flex gap-4 mt-6">
         <button
           onClick={() => window.location.href = '/api/v1/oauth/authorization/google'}
-        >Google로 로그인</button>
+        >Google로 로그인
+        </button>
         <button
           onClick={() => window.location.href = '/api/v1/oauth/authorization/naver'}
-        >Naver로 로그인</button>
+        >Naver로 로그인
+        </button>
         <button
           onClick={() => window.location.href = '/api/v1/oauth/authorization/kakao'}
-        >Kakao로 로그인</button>
+        >Kakao로 로그인
+        </button>
       </div>
       <Link to="/signup" className="mt-4 block">회원가입</Link>
     </Layout>
   );
 };
 
-export default Login;
+export default function Login() {
+  return (
+    <AuthProvider>
+      <LoginContent/>
+    </AuthProvider>
+  );
+}

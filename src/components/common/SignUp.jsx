@@ -1,12 +1,9 @@
 import React, {useState, useRef, useContext} from 'react';
-import {AuthContext} from '../../context/AuthContext';
+import {AuthContext, AuthProvider} from '../../context/AuthContext';
 import {useNavigate} from 'react-router-dom';
 import Layout from './Layout';
 
-const Signup = () => {
-  const [imageUrl, setImageUrl] = useState(null);
-  const [file, setFile] = useState(null);
-  const fileInputRef = useRef(null);
+const SignupContent = () => {
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -20,36 +17,25 @@ const Signup = () => {
   const navigate = useNavigate();
   const [error, setError] = useState(null);
 
-  const handleImageChange = e => {
-    const img = e.target.files[0];
-    if (img) {
-      setFile(img);
-      setImageUrl(URL.createObjectURL(img));
-    }
-  };
-
-  const handleClick = () => {
-    fileInputRef.current.click();
-  };
-
   const handleChange = e => {
-    setForm({...form, [e.target.name]: e.target.value});
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async e => {
     e.preventDefault();
     setError(null);
-    try {
-      const formData = new FormData();
-      formData.append('email', form.email);
-      formData.append('password', form.password);
-      formData.append('phone', form.phone);
-      formData.append('zipcode', form.zipcode);
-      formData.append('address', `${form.address1} ${form.address2}`);
-      formData.append('gender', form.gender);
-      if (file) formData.append('profile', file);
 
-      await signup(formData);
+    // 주소 합치기
+    const fullAddress = `${form.zipcode} ${form.address1} ${form.address2}`;
+
+    try {
+      await signup({
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
+        address: fullAddress,
+        gender: form.gender
+      });
       navigate('/login');
     } catch (err) {
       setError(err.response?.data?.message || '회원가입에 실패했습니다.');
@@ -60,15 +46,6 @@ const Signup = () => {
     <Layout>
       <h1 className='text-stone-800 font-bold text-[28px]'>Sign Up</h1>
       <form onSubmit={handleSubmit} className='flex gap-12 mt-6'>
-        <div>
-          <label className='block text-neutral-500'>Profile *</label>
-          <input type='file' accept='image/*' ref={fileInputRef} onChange={handleImageChange} className='hidden'/>
-          <div onClick={handleClick} className='w-40 h-40 rounded-full bg-gray-300 overflow-hidden cursor-pointer'>
-            <img src={imageUrl || `${process.env.PUBLIC_URL}/img/profile.svg`} alt='Profile'
-                 className='w-full h-full object-cover'/>
-          </div>
-        </div>
-
         <div className='flex flex-col gap-4 w-[490px]'>
           <label>Email *</label>
           <input name='email' type='email' value={form.email} onChange={handleChange} required className='border p-2'/>
@@ -108,4 +85,10 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default function Signup() {
+  return (
+    <AuthProvider>
+      <SignupContent/>
+    </AuthProvider>
+  );
+}
