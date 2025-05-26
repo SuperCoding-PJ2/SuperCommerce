@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // 인증 토큰을 가져오는 함수 (로컬 스토리지 또는 쿠키에서)
 const getToken = () => {
-    return localStorage.getItem('accessToken'); // 또는 쿠키에서 가져오기
+    return localStorage.getItem('token'); // 또는 쿠키에서 가져오기
 };
 
 const API = axios.create({
@@ -15,7 +15,6 @@ API.interceptors.request.use(config => {
     if (token) {
         config.headers['Authorization'] = `Bearer ${token}`;
     }
-    console.log('요청 헤더:', config.headers);
     return config;
 });
 
@@ -26,17 +25,21 @@ export const fetchMyPage = async () => {
 };
 
 // 내 정보 수정 (multipart/form-data)
-export const updateMyPage = async ({ email, shippingAddress, profileImageFile }) => {
-    const formData = new FormData();
-    formData.append('dto', new Blob([JSON.stringify({ email, shippingAddress })], {
-        type: 'application/json'
-    }));
+export const updateMyPage = async ({ email, shippingAddress, phoneNumber, profileImageFile }) => {
+    const formData = new FormData()
+
+    // JSON part must include phoneNumber now
+    const dto = { email, shippingAddress, phoneNumber }
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    )
+
     if (profileImageFile) {
-        formData.append('image', profileImageFile);
+        formData.append('image', profileImageFile)
     }
 
-    const res = await API.put('', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-    });
-    return res.data;
-};
+    // remove manual headers – axios will add Content-Type with boundary
+    const res = await API.put('', formData)
+    return res.data
+}

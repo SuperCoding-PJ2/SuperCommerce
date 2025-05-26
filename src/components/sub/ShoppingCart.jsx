@@ -1,55 +1,58 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import Layout from '../common/Layout';
-import { Link, useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 import {
   fetchCartItems,
   updateCartItem,
   deleteCartItem,
   addCartItem,
+  checkout,
 } from '../../services/cartService';
-import { AuthContext } from '../../context/AuthContext';
+import {AuthContext} from '../../context/AuthContext';
+import { toast } from 'react-toastify';
 
 const ShoppingCart = () => {
   const { user, token } = useContext(AuthContext);
   const [cartPage, setCartPage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [shippingAddress, setShippingAddress] = useState(user?.shippingAddress || '');
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) {
-      // 로그인되어 있지 않은 경우
-      alert('로그인이 필요한 서비스입니다.');
-      navigate(-1); // 이전 페이지로 돌아가기
+      const goLogin = window.confirm(
+        '로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?'
+      );
+      if (goLogin) {
+        navigate('/login', {replace: true});
+      }
       return;
     }
-
     loadCart();
   }, [token, navigate]);
 
-  // 불러오기
   const loadCart = async () => {
     if (!token) return;
     setLoading(true);
     try {
-      const data = await fetchCartItems({ page: 0, size: 50 });
+      const data = await fetchCartItems({page: 0, size: 10});
       setCartPage(data);
-    } catch (err) {
+    } catch {
       setError('장바구니를 불러오는 데 실패했습니다.');
     } finally {
       setLoading(false);
     }
   };
 
-  // 수량 변경
   const handleQtyChange = async (itemId, qty) => {
     try {
-      await updateCartItem({ itemId, quantity: qty });
-      // 로컬 업데이트
+      await updateCartItem({itemId, quantity: qty});
       setCartPage(page => ({
         ...page,
         content: page.content.map(i =>
-          i.id === itemId ? { ...i, quantity: qty } : i
+          i.id === itemId ? {...i, quantity: qty} : i
         ),
       }));
     } catch (err) {
@@ -57,10 +60,9 @@ const ShoppingCart = () => {
     }
   };
 
-  // 삭제
-  const handleDelete = async (itemId) => {
+  const handleDelete = async itemId => {
     try {
-      await deleteCartItem({ itemId });
+      await deleteCartItem({itemId});
       setCartPage(page => ({
         ...page,
         content: page.content.filter(i => i.id !== itemId),
@@ -70,13 +72,30 @@ const ShoppingCart = () => {
     }
   };
 
-  // 합계 계산
+  const handleCheckout = async () => {
+    if (!shippingAddress) {
+      toast.error('배송지를 입력해 주세요.');
+      return;
+    }
+    setIsCheckingOut(true);
+    try {
+      await checkout({ shippingAddress });
+      toast.success('결제가 완료되었습니다!');
+      navigate('/myaccount', {replace: true});
+    } catch (err) {
+      const msg = err.response?.data?.message || '결제 중 오류가 발생했습니다.';
+      toast.error(msg);
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
   const subtotal = cartPage
     ? cartPage.content.reduce((sum, i) => sum + i.price * i.quantity, 0)
     : 0;
 
   if (loading) return <Layout>로딩 중…</Layout>;
-  if (error)   return <Layout>{error}</Layout>;
+  if (error) return <Layout>{error}</Layout>;
 
   return (
     <Layout>
@@ -91,7 +110,7 @@ const ShoppingCart = () => {
           </div>
 
           {/* 오른쪽 */}
-          <div className="w-full space-y py-8">
+          <div className="w-full space-y-6 py-8">
             {/* 헤더 */}
             <div className="grid grid-cols-5 border-b border-[#757575] py-3 font-semibold">
               <div className="col-span-2">Item</div>
@@ -102,9 +121,9 @@ const ShoppingCart = () => {
 
             {/* 리스트 */}
             <div className="divide-y">
-              {cartPage?.content.map(item => (
+              {cartPage?.content.map((item, idx) => (
                 <div
-                  key={item.id}
+                  key={item.id != null ? item.id : idx}
                   className="grid grid-cols-5 py-4 items-center"
                 >
                   {/* 아이템 정보 */}
@@ -158,6 +177,21 @@ const ShoppingCart = () => {
 
             {/* Summary */}
             <div className="border-t border-[#757575] pt-2 space-y-2">
+              {/* 배송지 입력 필드 */}
+              <div className="mt-4">
+                <label htmlFor="shippingAddress" className="block text-sm font-semibold mb-1">
+                  배송지
+                </label>
+                <input
+                  type="text"
+                  id="shippingAddress"
+                  value={shippingAddress}
+                  onChange={e => setShippingAddress(e.target.value)}
+                  className="w-full border p-2 text-sm"
+                  placeholder="배송지 입력"
+                />
+              </div>
+
               <div className="flex justify-between text-gray-600 border-b border-gray-300 py-3">
                 <span>Shipping:</span>
                 <span>Free</span>
@@ -173,13 +207,19 @@ const ShoppingCart = () => {
 
               <div className="mt-6 flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
                 <div className="flex items-center gap-2">
-                  <input type="checkbox" id="coupon" className="w-4 h-4" />
+                  <input type="checkbox" id="coupon" className="w-4 h-4"/>
                   <label htmlFor="coupon" className="text-sm">
                     I have a coupon code
                   </label>
                 </div>
-                <button className="bg-black text-white px-6 py-2 text-sm font-semibold mt-4 sm:mt-6">
-                  Checkout
+                <button
+                  onClick={handleCheckout}
+                  disabled={isCheckingOut}
+                  className={`bg-black text-white px-6 py-2 text-sm font-semibold mt-4 sm:mt-6 ${
+                    isCheckingOut ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-800'
+                  }`}
+                >
+                  {isCheckingOut ? '결제 처리 중…' : 'Checkout'}
                 </button>
               </div>
             </div>

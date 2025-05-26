@@ -1,4 +1,3 @@
-// src/context/AuthContext.jsx
 import React, { createContext, useState, useEffect } from 'react';
 import { signup as apiSignup, login as apiLogin, logout as apiLogout } from '../services/authService';
 import axios from 'axios';
@@ -6,7 +5,7 @@ import axios from 'axios';
 const API_BASE_URL = 'http://52.79.184.1:8080';
 
 const API = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/api/v1/auth`,
 });
 
 export const AuthContext = createContext();
@@ -15,14 +14,14 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState(null);
-  const [initialized, setInitialized] = useState(false); // ✅ 추가
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
       setToken(storedToken);
     }
-    setInitialized(true); // ✅ 초기화 완료 시점
+    setInitialized(true);
   }, []);
 
   useEffect(() => {
@@ -55,10 +54,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // OAuth 콜백 핸들러 (OAuth2RedirectHandler 에서 호출)
   const oauthLogin = async ({ provider, code }) => {
     setLoading(true);
     try {
-      const res = await API.get(`/api/v1/auth/oauth2/code/${provider}?code=${code}`);
+      // 백엔드 OAuth2 콜백 엔드포인트
+      const res = await axios.get(
+        `${API_BASE_URL}/oauth2/code/${provider}`,
+        { params: { code } }
+      );
       const jwt = res.data.token;
       localStorage.setItem('token', jwt);
       setToken(jwt);

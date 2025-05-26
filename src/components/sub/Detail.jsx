@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import {useParams, Link, Navigate, useNavigate} from 'react-router-dom';
 import Loading from '../common/Loading';
 import { getProductById } from '../../services/productService';
 import { addCartItem } from '../../services/cartService';
@@ -8,6 +8,7 @@ import { toast } from 'react-toastify'; // 알림 기능 추가 (선택사항)
 
 const Detail = () => {
   const { id } = useParams();
+  const navigate = useNavigate();               // ← 여기에
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [size, setSize] = useState('');
@@ -21,7 +22,6 @@ const Detail = () => {
     // API 호출 및 응답 처리
     getProductById(id)
       .then(data => {
-        console.log('API 응답 데이터:', data);
         setProduct(data);
       })
       .catch(error => {
@@ -46,8 +46,10 @@ const Detail = () => {
 
     // 로그인 상태 확인
     if (!token) {
-      alert('로그인이 필요한 서비스입니다.');
-      // 로그인 페이지로 이동 로직 추가 가능
+      const goLogin = window.confirm('로그인이 필요한 서비스입니다.\n로그인 페이지로 이동하시겠습니까?');
+      if (goLogin) {
+        navigate('/login', { replace: true });
+      }
       return;
     }
 

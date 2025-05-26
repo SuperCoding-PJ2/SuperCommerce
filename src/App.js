@@ -40,7 +40,16 @@ function AppRoutes() {
 
         <Route path="/signup" element={<SignUp />} />
         <Route path="/oauth2/redirect" element={<OAuth2RedirectHandler />} />
-        <Route path="/shoppingcart" element={<ShoppingCart />} />
+        {/* 보호된 장바구니 */}
+        <Route
+          path="/shoppingcart"
+          element={
+            <ProtectedRoute>
+              <ShoppingCart />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/detail/:id" element={<Detail />} />
 
         {/* 보호된 페이지 */}
