@@ -12,11 +12,12 @@ const OAuth2RedirectHandler = () => {
   useEffect(() => {
     const params = new URLSearchParams(loc.search);
     const code = params.get('code');
-    const state = params.get('state'); // 필요시
-    const provider = params.get('provider'); // 백엔드가 붙여준다 가정
+    // URL 경로에서 provider 추출 (예: /oauth2/callback/google)
+    const pathParts = loc.pathname.split('/');
+    const provider = pathParts[pathParts.length - 1];
 
     if (!code || !provider) {
-      setError('Invalid OAuth callback');
+      setError('유효하지 않은 OAuth 콜백입니다.');
       return;
     }
 
@@ -25,7 +26,7 @@ const OAuth2RedirectHandler = () => {
       .catch(() => {
         setError('소셜 로그인에 실패했습니다.');
       });
-  }, [loc.search, oauthLogin, navigate]);
+  }, [loc, oauthLogin, navigate]);
 
   if (error) return <div className="p-4 text-red-500">{error}</div>;
   return <div className="p-4">로그인 처리 중입니다…</div>;

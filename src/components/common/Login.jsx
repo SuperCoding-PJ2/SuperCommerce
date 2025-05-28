@@ -3,9 +3,6 @@ import {AuthContext} from '../../context/AuthContext';
 import {useNavigate, Link} from 'react-router-dom';
 import Layout from './Layout';
 
-// 백엔드 OAuth2 인가 엔드포인트
-const API_BASE_URL = 'http://localhost:8080';//'http://52.79.184.1:8080';
-
 const Login = () => {
   const [form, setForm] = useState({email: '', password: ''});
   const {login, loading} = useContext(AuthContext);
@@ -18,7 +15,6 @@ const Login = () => {
   const handleSubmit = async e => {
     e.preventDefault();
     setError(null);
-
     try {
       await login(form);
       navigate('/', {replace: true});
@@ -27,11 +23,42 @@ const Login = () => {
     }
   };
 
-  // OAuth2 로그인을 위해 백엔드 인가 URL로 이동
+  // ✅ 소셜 로그인 통합 핸들러
   const handleOAuthLogin = provider => {
-    const url = `${API_BASE_URL}/api/v1/oauth/authorization/${provider}`;
-    console.log(url);
-    window.location.href = `${API_BASE_URL}/api/v1/oauth/authorization/${provider}`;
+    const redirectUri = encodeURIComponent('https://52.79.184.1:8080/oauth/callback');
+    //const redirectUri = encodeURIComponent('http://localhost:3000/oauth/callback');
+
+    const state = provider;
+
+    let clientId = '';
+    let authUrl = '';
+    let scope = '';
+    let responseType = 'code';
+
+    switch (provider) {
+      case 'google':
+        clientId = '702468159172-7c2h4u640p0jff9ems5ppmq0c3svrmfm.apps.googleusercontent.com';
+        authUrl = 'https://accounts.google.com/o/oauth2/v2/auth';
+        scope = 'openid profile email';
+        break;
+      case 'naver':
+        clientId = 'ZocBT93vkZ7sd98R88Mp';
+        authUrl = 'https://nid.naver.com/oauth2.0/authorize';
+        scope = 'name email';
+        break;
+      case 'kakao':
+        clientId = '8957405e7da43015486f4077e1f30259';
+        authUrl = 'https://kauth.kakao.com/oauth/authorize';
+        scope = 'profile account_email';
+        break;
+      default:
+        return;
+    }
+
+    // ✅ 각 플랫폼별 인증 요청 URL 구성
+    const oauthUrl = `${authUrl}?response_type=${responseType}&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${encodeURIComponent(scope)}&state=${state}`;
+
+    window.location.href = oauthUrl;
   };
 
   return (

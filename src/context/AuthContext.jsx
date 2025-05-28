@@ -58,9 +58,9 @@ export const AuthProvider = ({ children }) => {
   const oauthLogin = async ({ provider, code }) => {
     setLoading(true);
     try {
-      // 백엔드 OAuth2 콜백 엔드포인트
+      // 백엔드 컨트롤러 경로에 맞게 수정
       const res = await axios.get(
-        `${API_BASE_URL}/oauth2/code/${provider}`,
+        `${API_BASE_URL}/api/v1/auth/${provider}`,
         { params: { code } }
       );
       const jwt = res.data.token;
@@ -70,6 +70,7 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
 
   const logout = async () => {
     await apiLogout();
